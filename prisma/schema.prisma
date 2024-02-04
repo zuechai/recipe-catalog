@@ -1,0 +1,57 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model emails {
+  id          String   @id(map: "emails_pk") @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  email       String?  @db.VarChar
+  isconfirmed Boolean? @default(false)
+}
+
+model ingredient_lists {
+  id            Int         @id(map: "ingredient_lists_pk") @default(autoincrement())
+  recipe_id     String?     @db.Uuid
+  ingredient_id Int         @default(autoincrement())
+  amount        Decimal?    @db.Decimal
+  unit          String?     @db.VarChar
+  ingredients   ingredients @relation(fields: [ingredient_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "ingredient_lists_ingredient_id_fk")
+  recipes       recipes?    @relation(fields: [recipe_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "ingredient_lists_recipe_id_fk")
+}
+
+model ingredients {
+  id               Int                @id(map: "ingredients_pk") @default(autoincrement())
+  name             String             @db.VarChar
+  ingredient_lists ingredient_lists[]
+}
+
+model procedures {
+  id        Int     @id(map: "procedures_pk") @default(autoincrement())
+  recipe_id String  @db.Uuid
+  step      Int
+  procedure String
+  recipes   recipes @relation(fields: [recipe_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "procedures_recipe_id_fk")
+}
+
+model recipes {
+  id               String             @id(map: "recipes_pk") @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name             String             @db.VarChar
+  user_id          String             @default(dbgenerated("'01b17eca-6921-4b4c-ba89-f202aec503cf'::uuid")) @db.Uuid
+  ingredient_lists ingredient_lists[]
+  procedures       procedures[]
+  users            users              @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "recipes_users_user_id_fk")
+}
+
+model users {
+  id            String    @id(map: "users_pk") @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  first_name    String    @db.VarChar
+  middle_name   String?   @db.VarChar
+  last_name     String    @db.VarChar
+  name_suffix   String?   @db.VarChar
+  primary_email String    @db.Uuid
+  recipes       recipes[]
+}
