@@ -3,6 +3,11 @@ import ProcedureListItem from "@/app/clientComponents/procedureListItem";
 import RecipeTitle from "@/app/clientComponents/recipeTitle";
 import prisma from "../../prisma/prismaClient";
 
+// import { ingredient_lists } from "@prisma/client";
+// import { Decimal } from "@prisma/client/runtime/binary";
+// type ingredientAmount = Omit<ingredient_lists, "amount"> & {
+//     amount: Decimal | number | null;
+// }
 export default async function Home() {
     const recipes = await prisma.recipes.findMany({
         where: { id: "7fbf6f55-fb4d-4150-93d9-72384bc4f3f8" },
@@ -34,13 +39,13 @@ export default async function Home() {
                         <RecipeTitle id={r.id} name={r.name} />
                         <ul>
                             <h3>Ingredients</h3>
-                            {r.ingredient_lists.map((i) => (
-                                <IngredientListItem key={r.id}
+                            {r.ingredient_lists.map(({ ingredient_id, amount, unit, ingredients }) => (
+                                <IngredientListItem key={`${r.id}${ingredient_id}`}
                                                     id={r.id}
-                                                    ingredient_id={i.ingredient_id}
-                                                    amount={i.amount}
-                                                    unit={i.unit}
-                                                    ingredients={i.ingredients} />
+                                                    ingredient_id={ingredient_id}
+                                                    amount={amount as unknown as number | null}
+                                                    unit={unit}
+                                                    ingredients={ingredients} />
                             ))}
                         </ul>
                         <ul>

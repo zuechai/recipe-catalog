@@ -1,6 +1,5 @@
 "use client";
 
-import { Decimal } from "@prisma/client/runtime/binary";
 import { useState } from "react";
 
 export default function IngredientListItem(
@@ -8,7 +7,7 @@ export default function IngredientListItem(
         {
             id: string,
             ingredient_id: number,
-            amount: Decimal | null,
+            amount: number | null,
             unit: string | null,
             ingredients: { name: string }
         }) {
