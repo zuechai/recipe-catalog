@@ -1,7 +1,10 @@
+import IngredientListItem from "@/app/clientComponents/ingredientListItem";
+import ProcedureListItem from "@/app/clientComponents/procedureListItem";
 import prisma from "../../prisma/prismaClient";
 
 export default async function Home() {
     const recipes = await prisma.recipes.findMany({
+        where: { id: "7fbf6f55-fb4d-4150-93d9-72384bc4f3f8" },
         select: {
             id: true,
             name: true,
@@ -25,54 +28,36 @@ export default async function Home() {
     console.log(...recipes);
 
     return (
-        <>
-            <ul>
-                {recipes.map(r => (
-                    <li key={r.id}>
-                        <form className={`text-black`}>
-                            <label htmlFor={`${r.id}`}>
-                                Recipe
-                                <input id={`${r.id}`} type={"text"} defaultValue={r.name}/>
-                            </label>
-                            <ul>
-                                <h3>Ingredients</h3>
-                                {r.ingredient_lists.map((i) => (
-                                    <li key={i.ingredient_id}>
-                                        <label htmlFor={`${r.id}-${i.ingredient_id}-amount`}>
-                                            Amount
-                                            <input id={`${r.id}-${i.ingredient_id}-amount`} type={"number"}
-                                                   defaultValue={`${i.amount}`} className={`w-1/2`}/>
-                                        </label>
-                                        <label htmlFor={`${r.id}-${i.ingredient_id}-unit`}>
-                                            Unit
-                                            <input id={`${r.id}-${i.ingredient_id}-unit`} type={"text"}
-                                                   defaultValue={`${i.unit}`}/>
-                                        </label>
-                                        <label htmlFor={`${r.id}-${i.ingredient_id}-name`}>
-                                            Ingredient
-                                            <input id={`${r.id}-${i.ingredient_id}-name`} type={"text"}
-                                                   defaultValue={i.ingredients.name}/>
-                                        </label>
-                                    </li>
-                                ))}
-                            </ul>
-                            <ul>
-                                <h3>Procedure</h3>
-                                {r.procedures.map((p) => {
-                                    return (
-                                        <li key={p.id}>
-                                            <label className={`procedures`} htmlFor={`${p.id}`}>
-                                                {p.step}:
-                                                <textarea id={`${p.id}`} rows={5} cols={70} defaultValue={p.procedure}/>
-                                            </label>
-                                        </li>
-                                    );
-                                })}
-                            </ul>
-                        </form>
-                    </li>
-                ))}
-            </ul>
-        </>
+        <ul>
+            {recipes.map(r => (
+                <li key={r.id}>
+                    <form className={`text-black`}>
+                        <label htmlFor={`${r.id}`}>
+                            <span>Recipe</span>
+                            <input className={`w-0.5`} id={`${r.id}`} type={"text"} defaultValue={r.name} />
+                        </label>
+                        <ul>
+                            <h3>Ingredients</h3>
+                            {r.ingredient_lists.map((i) => (
+                                <IngredientListItem key={r.id}
+                                                    id={r.id}
+                                                    ingredient_id={i.ingredient_id}
+                                                    amount={i.amount}
+                                                    unit={i.unit}
+                                                    ingredients={i.ingredients} />
+                            ))}
+                        </ul>
+                        <ul>
+                            <h3>Procedure</h3>
+                            {r.procedures.map((p) => {
+                                return (
+                                    <ProcedureListItem key={p.id} id={p.id} step={p.step} procedure={p.procedure} />
+                                );
+                            })}
+                        </ul>
+                    </form>
+                </li>
+            ))}
+        </ul>
     );
 }
