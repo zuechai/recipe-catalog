@@ -1,5 +1,6 @@
 import IngredientListItem from "@/app/clientComponents/ingredientListItem";
 import ProcedureListItem from "@/app/clientComponents/procedureListItem";
+import RecipeTitle from "@/app/clientComponents/recipeTitle";
 import prisma from "../../prisma/prismaClient";
 
 export default async function Home() {
@@ -25,17 +26,12 @@ export default async function Home() {
         }
     });
 
-    console.log(...recipes);
-
     return (
         <ul>
             {recipes.map(r => (
                 <li key={r.id}>
                     <form className={`text-black`}>
-                        <label htmlFor={`${r.id}`}>
-                            <span>Recipe</span>
-                            <input className={`w-0.5`} id={`${r.id}`} type={"text"} defaultValue={r.name} />
-                        </label>
+                        <RecipeTitle id={r.id} name={r.name} />
                         <ul>
                             <h3>Ingredients</h3>
                             {r.ingredient_lists.map((i) => (
